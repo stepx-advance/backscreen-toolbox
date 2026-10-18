@@ -48,7 +48,7 @@ final class Recovery {
         PendingIntent open=PendingIntent.getActivity(c,7,new Intent(c,MainActivity.class),PendingIntent.FLAG_IMMUTABLE);
         c.getSystemService(NotificationManager.class).notify(2,new Notification.Builder(c,"monitor")
             .setSmallIcon(com.stepxadvance.backscreentoolbox.R.drawable.icon).setContentTitle("背屏工具箱需要恢复")
-            .setContentText("点按打开应用，继续显示充电状态").setContentIntent(open)
+            .setContentText("点按打开应用，继续运行背屏工具箱").setContentIntent(open)
             .setAutoCancel(true).setOnlyAlertOnce(true).build());
     }
 }

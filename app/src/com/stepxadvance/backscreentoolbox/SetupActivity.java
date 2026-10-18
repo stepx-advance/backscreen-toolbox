@@ -21,7 +21,7 @@ public final class SetupActivity extends Activity {
         });
         LinearLayout root=new LinearLayout(this);root.setOrientation(1);root.setPadding(dp(22),dp(14),dp(22),dp(16));root.setBackgroundColor(BG);
         ScrollView scroll=new ScrollView(this);scroll.setFillViewport(true);scroll.addView(root);setContentView(scroll);
-        TextView title=text("准备好充电背屏",26,WHITE);title.setTypeface(null,Typeface.BOLD);add(root,title,0,5);
+        TextView title=text("准备好背屏工具箱",26,WHITE);title.setTypeface(null,Typeface.BOLD);add(root,title,0,5);
         add(root,text("点开条目，按图中红框设置",13,MUTED),0,10);
         progress=text("",12,GREEN);add(root,progress,0,12);
         String[] labels={"系统背屏","后台运行","开机与后台恢复","旁路识别","通知栏显示"};
@@ -36,8 +36,8 @@ public final class SetupActivity extends Activity {
             LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,dp(70));lp.bottomMargin=dp(7);root.addView(row,lp);
             row.setContentDescription(labels[i]+"，查看设置图解");row.setFocusable(true);row.setOnClickListener(v->startActivity(new Intent(this,SetupDetailActivity.class).putExtra("kind",kind)));
         }
-        add(root,text("电量、动画、旋转和恢复任务自动处理",11,MUTED),4,12);
-        Button finish=new Button(this);finish.setText(first?"开启充电背屏":"完成并返回");finish.setTextSize(14);finish.setAllCaps(false);finish.setTextColor(BG);finish.setBackgroundTintList(android.content.res.ColorStateList.valueOf(GREEN));add(root,finish,0,6);
+        add(root,text("消息、音乐与计时权限在使用时按需开启",11,MUTED),4,12);
+        Button finish=new Button(this);finish.setText(first?"开启背屏工具箱":"完成并返回");finish.setTextSize(14);finish.setAllCaps(false);finish.setTextColor(BG);finish.setBackgroundTintList(android.content.res.ColorStateList.valueOf(GREEN));add(root,finish,0,6);
         finish.setOnClickListener(v->{
             if(first&&SetupSupport.legacyInstalled(this)) {
                 new AlertDialog.Builder(this).setTitle("先关闭旧版背屏充电")
