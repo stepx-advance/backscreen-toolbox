@@ -1,0 +1,12 @@
+/build/
+/dist/
+/.local/
+/research/
+/publication-private/
+__pycache__/
+*.pyc
+*.p12
+*.jks
+*.keystore
+*.idsig
+.DS_Store
