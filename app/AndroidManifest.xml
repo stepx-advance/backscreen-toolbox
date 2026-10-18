@@ -1,0 +1,37 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.stepxadvance.backscreentoolbox" android:versionCode="1" android:versionName="1.0.0">
+    <uses-sdk android:minSdkVersion="34" android:targetSdkVersion="36" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <queries>
+        <package android:name="com.stepos.battery" />
+        <package android:name="local.stepx.backcharge" />
+    </queries>
+    <application android:label="STEPX 背屏工具箱" android:icon="@drawable/icon" android:theme="@style/AppTheme" android:allowBackup="false" android:supportsRtl="true">
+        <activity android:name=".MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".SetupActivity" android:exported="false" />
+        <activity android:name=".SetupDetailActivity" android:exported="false" />
+        <service android:name=".ChargeService" android:exported="false" android:stopWithTask="false" android:foregroundServiceType="specialUse">
+            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="User-enabled persistent charging-state display on the built-in STEPX dot-matrix rear display; listens to battery events and releases display on unplug." />
+        </service>
+        <service android:name=".RecoveryJob" android:exported="true" android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service android:name=".BypassMonitor" android:label="旁路识别（系统电池通知）" android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" android:exported="true">
+            <intent-filter><action android:name="android.service.notification.NotificationListenerService" /></intent-filter>
+            <meta-data android:name="android.service.notification.default_filter_types" android:value="ongoing" />
+            <meta-data android:name="android.service.notification.disabled_filter_types" android:value="conversations|alerting|silent" />
+        </service>
+        <receiver android:name=".PowerReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>
