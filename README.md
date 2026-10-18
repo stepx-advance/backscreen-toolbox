@@ -8,7 +8,7 @@
 
 ## 下载与安装
 
-从 [Releases](https://github.com/stepx-advance/backscreen-toolbox/releases) 下载 `backscreen-toolbox-1.0.0.apk`；`SHA256SUMS` 用于核对文件。首个公开版本 **1.0.0** 为预发布版。
+**1.0.0 安装包目前保留在发布草稿中，等待锁屏、背屏朝上时的实物显示确认，尚未开放下载。** 公开后可从 [Releases](https://github.com/stepx-advance/backscreen-toolbox/releases) 下载 `backscreen-toolbox-1.0.0.apk`，使用 `SHA256SUMS` 核对文件；首版将标为预发布版。
 
 1. 在 PZ261A 上安装 APK，允许系统安装确认。
 2. 打开“STEPX 背屏工具箱”，按一屏设置清单完成后台设置；每个条目都有红框图解和系统设置入口。
