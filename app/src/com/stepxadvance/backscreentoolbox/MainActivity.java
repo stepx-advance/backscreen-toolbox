@@ -63,7 +63,7 @@ public final class MainActivity extends Activity {
         Button test=button("在背屏预览 12 秒"); add(root,test,0,10,0,14);
         test.setOnClickListener(v -> preview(uiMode==2?"full":uiMode==3?"bypass":"charging"));
         bypassStatus=text("",12,MUTED);add(root,bypassStatus,0,0,0,8);
-        TextView note=text("竖屏：电池在上，电量在下\n横屏：横向电池与一行电量，随握持方向切换\n旁路：电池旁的能量绕行，保留真实电量\n来电、通知和相机优先；亮度跟随系统",12,MUTED); note.setLineSpacing(dp(5),1); root.addView(note);
+        TextView note=text("竖屏：电池在上，电量在下\n横屏：横向电池与一行电量，随握持方向切换\n旁路：电池旁的能量绕行，保留真实电量\n来电、通知和相机优先；亮度跟随系统\n背屏朝下或系统保护时，画面可能暂时熄灭",12,MUTED); note.setLineSpacing(dp(5),1); root.addView(note);
         toggle.setChecked(ChargeService.enabled(this));
         toggle.setOnCheckedChangeListener((v,checked) -> {
             ChargeService.setEnabled(this,checked);

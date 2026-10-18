@@ -26,7 +26,7 @@ public final class SetupDetailActivity extends Activity {
         status=text("",12,SetupActivity.GREEN);add(root,status,0,10);
         ScrollView scroll=new ScrollView(this);LinearLayout content=new LinearLayout(this);content.setOrientation(1);scroll.addView(content);root.addView(scroll,new LinearLayout.LayoutParams(-1,0,1));
         if(kind==0) {
-            add(content,text("打开「背屏显示」开关。",14,SetupActivity.WHITE),0,10);
+            add(content,text("打开「背屏显示」。持续显示需选「始终显示」；背屏朝下或系统保护仍可能熄灭。",14,SetupActivity.WHITE),0,10);
             picture(content,R.drawable.setup_screen,new Rect(52,1030,1148,1710),new Rect(78,1280,1122,1515));
         } else if(kind==1) {
             add(content,text("允许系统确认；或在列表选「STEPX 背屏工具箱」，开启「允许后台使用」。",14,SetupActivity.WHITE),0,10);

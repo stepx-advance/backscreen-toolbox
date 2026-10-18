@@ -195,7 +195,7 @@ public final class ChargeService extends Service {
                 errorCount = 0;
                 rotating=transition!=null;
                 previewFrame=pixels;
-                detail = orientation.compactFallback()?(orientation.sensorStale()?"方向数据暂不可用 · 正在恢复，使用紧凑显示":"正在确认方向 · 使用紧凑显示"):demoActive ? "背屏预览中 · 12 秒后恢复真实状态" : "背屏已接入 · 跟随系统亮屏与亮度设置";
+                detail = orientation.compactFallback()?(orientation.sensorStale()?"方向数据暂不可用 · 正在恢复，使用紧凑显示":"正在确认方向 · 使用紧凑显示"):demoActive ? "背屏预览中 · 12 秒后恢复真实状态" : "画面已提交 · 点亮由系统设置与姿态控制";
                 long age = now - sceneStarted;
                 long delay = s.mode == ChargeState.Mode.CHARGING || s.mode == ChargeState.Mode.BYPASS_WAITING ? 180
                     : s.mode == ChargeState.Mode.BYPASS ? 250 : s.mode == ChargeState.Mode.FULL && age < 1600 ? 100 : 5000;
