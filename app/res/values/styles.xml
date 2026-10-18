@@ -8,4 +8,12 @@
         <item name="android:windowBackground">#101310</item>
         <item name="android:navigationBarColor">#101310</item>
     </style>
+    <style name="ToolDialog" parent="android:style/Theme.Material.Dialog.Alert">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:colorAccent">#B5F47C</item>
+        <item name="android:colorBackgroundFloating">#1A201B</item>
+        <item name="android:windowBackground">@drawable/dialog_background</item>
+        <item name="android:windowMinWidthMajor">90%</item>
+        <item name="android:windowMinWidthMinor">90%</item>
+    </style>
 </resources>
