@@ -12,6 +12,39 @@ public final class ChargeFrames {
     public static int[] render(ChargeState state, long elapsed, boolean landscape) {
         return landscape ? renderLandscape(state, elapsed) : render(state, elapsed);
     }
+    /** Crisp upright scene for a compositor locked to its 17x17 landscape crop. */
+    public static int[] compactPortrait(ChargeState s,long t) {
+        int[] f=new int[391];
+        line(f,7,3,9,3,150);line(f,5,5,11,5,150);line(f,5,12,11,12,150);
+        line(f,4,6,4,11,150);line(f,12,6,12,11,150);
+        int fill=s.percent<0?0:(s.percent*5+99)/100;
+        boolean flow=s.mode==ChargeState.Mode.CHARGING||s.mode==ChargeState.Mode.BYPASS_WAITING&&s.charging;
+        for(int y=6;y<=10;y++)for(int x=6;x<=10;x++) {
+            int v=y>=11-fill?65:0;
+            if(flow&&v>0&&y==10-(int)(Math.max(0,t)%2400/300))v=150;
+            dot(f,x,y,v);
+        }
+        if(s.mode==ChargeState.Mode.FULL) {
+            line(f,6,8,7,9,255);line(f,7,9,10,6,255);
+        } else if(s.mode==ChargeState.Mode.BYPASS) {
+            line(f,6,8,10,8,255);line(f,6,9,10,9,0);line(f,6,10,10,10,255);
+            int y=11-(int)(Math.max(0,t)%2400/300);if(y>=5){dot(f,2,y,255);dot(f,14,y,255);}
+        } else if(s.mode==ChargeState.Mode.PAUSED||s.mode==ChargeState.Mode.BYPASS_WAITING&&!s.charging) {
+            line(f,6,7,6,10,255);line(f,10,7,10,10,255);
+        } else if(flow) {
+            glyph(f,"011010111010110",3,7,6,255,false);
+            if(s.mode==ChargeState.Mode.BYPASS_WAITING){dot(f,2,6,65);dot(f,2,9,65);}
+        } else glyph(f,"111001010000010",3,7,6,255,false);
+        String number=s.percent<0?"--":Integer.toString(s.percent);
+        int left=(WIDTH-(number.length()*4-1+4))/2;
+        for(int i=0;i<number.length();i++) {
+            char ch=number.charAt(i);
+            if(ch=='-')line(f,left+i*4,16,left+i*4+2,16,255);
+            else glyph(f,DIGITS[ch-'0'],3,left+i*4,14,255,false);
+        }
+        glyph(f,"101001010100101",3,left+number.length()*4,14,150,false);
+        return f;
+    }
     private static int[] renderLandscape(ChargeState s, long t) {
         int[] f=new int[391];
         // A wide, chamfered battery and one centred baseline, within y=3..19.

@@ -7,17 +7,25 @@ public final class RotationTransition {
     public static final long COMPOSITOR_BLANK_MS=100, DURATION_MS=180, FRAME_MS=20;
     private final int[] from;
     private final boolean toLandscape;
+    private final boolean square;
     private final double turn;
     private final long start;
 
     public RotationTransition(int[] fromFrame,int fromRotation,int toRotation,long committedAt) {
+        this(fromFrame,fromRotation,toRotation,committedAt,true);
+    }
+    public RotationTransition(int[] fromFrame,int fromRotation,int toRotation,long committedAt,boolean compositorTurns) {
+        this(fromFrame,fromRotation,toRotation,committedAt,compositorTurns,false);
+    }
+    public RotationTransition(int[] fromFrame,int fromRotation,int toRotation,long committedAt,boolean compositorTurns,boolean compactTarget) {
         if(fromFrame==null||fromFrame.length!=391)throw new IllegalArgumentException("17×23 required");
         from=Arrays.copyOf(fromFrame,fromFrame.length);
         toLandscape=toRotation==1||toRotation==3;
+        square=toLandscape||compactTarget;
         int quarter=(fromRotation-toRotation)%4;
         if(quarter>2)quarter-=4;else if(quarter< -2)quarter+=4;
         turn=quarter*Math.PI/2;
-        start=committedAt+COMPOSITOR_BLANK_MS;
+        start=committedAt+(compositorTurns?COMPOSITOR_BLANK_MS:0);
     }
     public boolean finished(long now) { return now>=start+DURATION_MS; }
     public long nextDelay(long now) { return now<start?start-now:Math.min(FRAME_MS,Math.max(1,start+DURATION_MS-now)); }
@@ -34,7 +42,7 @@ public final class RotationTransition {
         mix=mix*mix*(3-2*mix);
         double brightness=.35+.65*Math.abs(2*p-1);
         int[] out=new int[391];
-        int top=toLandscape?3:0,bottom=toLandscape?20:23;
+        int top=square?3:0,bottom=square?20:23;
         for(int y=top;y<bottom;y++)for(int x=0;x<17;x++) {
             double dx=x-8,dy=y-11;
             double sx=cos*dx+sin*dy,sy=-sin*dx+cos*dy;
@@ -53,7 +61,7 @@ public final class RotationTransition {
         }
         double scale=1;
         if(maxX>0)scale=Math.min(scale,(8-padding)/maxX);
-        if(maxY>0)scale=Math.min(scale,((toLandscape?8:11)-padding)/maxY);
+        if(maxY>0)scale=Math.min(scale,((square?8:11)-padding)/maxY);
         return scale;
     }
     private static double sample(int[] source,double x,double y) {

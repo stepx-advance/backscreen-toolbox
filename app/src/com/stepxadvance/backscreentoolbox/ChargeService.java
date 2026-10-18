@@ -22,12 +22,14 @@ public final class ChargeService extends Service {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private RearDisplay display;
     private OrientationTracker orientation;
+    private LockedDisplaySession lockedSession;
     private Intent latestBattery;
     private ChargeState actual;
     private ChargeState demo;
     private long demoUntil, nextBusyCheck;
     private boolean owns, busy;
     private int[] lastFrame;
+    private int[] lastSubmittedFrame;
     private int frameRotation;
     private boolean lastCompact=true;
     private RotationTransition transition;
@@ -78,11 +80,12 @@ public final class ChargeService extends Service {
         catch (Exception e) { fail(e); }
         running = true;
         instance = this;
+        lockedSession=new LockedDisplaySession(this,handler);
         orientation = new OrientationTracker(this,handler,() -> {
             int nextRotation=orientation.rotation();
             if(nextRotation!=frameRotation) {
                 transition=smoothRotationEnabled(this)&&owns&&lastFrame!=null&&!lastCompact&&!orientation.compactFallback()
-                    ? new RotationTransition(lastFrame,frameRotation,nextRotation,SystemClock.uptimeMillis()) : null;
+                    ? new RotationTransition(lastFrame,frameRotation,nextRotation,SystemClock.uptimeMillis(),orientation.interactive(),orientation.compactPortrait()) : null;
                 transitionCommittedAt=SystemClock.uptimeMillis();
                 transitionFrameCount=0;
                 frameRotation=nextRotation;
@@ -90,7 +93,7 @@ public final class ChargeService extends Service {
             if(orientation.compactFallback()){transition=null;rotating=false;}
             lastCompact=orientation.compactFallback();
             landscape=orientation.landscape();
-            lastFrame=null;
+            lastFrame=null;lastSubmittedFrame=null;
             handler.removeCallbacks(tick);
             tick.run();
         });
@@ -135,6 +138,9 @@ public final class ChargeService extends Service {
         }
         if (visible == null || visible.mode != next.mode) { sceneStarted = now; lastFrame = null; }
         visible = next;
+        // Follow native turns while awake even between charges, so a later locked
+        // plug-in starts with the compositor's latest anchor. This never wakes the CPU.
+        orientation.setActive(enabled(this));
         String message = (demoActive ? "预览 · " : "") + next.label() + (next.percent < 0 ? "" : " · " + next.percent + "%");
         if (!message.equals(lastNotification)) {
             lastNotification = message;
@@ -152,6 +158,7 @@ public final class ChargeService extends Service {
             if (s == null) return;
             try {
                 if (s.mode == ChargeState.Mode.UNPLUGGED) {
+                    lockedSession.setActive(false,false);
                     clear();
                     detail = "已让出背屏 · 等待充电";
                     // Battery events restart the tick; idle has no recurring timer.
@@ -164,13 +171,16 @@ public final class ChargeService extends Service {
                     nextBusyCheck = now + 1500;
                 }
                 if (busy) {
+                    lockedSession.setActive(false,false);
                     transition=null;rotating=false;
-                    if (owns) { display.show(null); owns = false; lastFrame = null; }
+                    if (owns) { display.show(null); owns = false; lastFrame = null;lastSubmittedFrame=null; }
                     detail = "Amoo 正在使用背屏 · 完成后自动恢复";
                     handler.postDelayed(this, 1500);
                     return;
                 }
-                int[] pixels = ChargeFrames.render(s, now - sceneStarted,landscape);
+                boolean moving=s.mode==ChargeState.Mode.CHARGING||s.mode==ChargeState.Mode.BYPASS||s.mode==ChargeState.Mode.BYPASS_WAITING;
+                lockedSession.setActive(enabled(ChargeService.this)&&actual!=null&&actual.mode!=ChargeState.Mode.UNPLUGGED,moving);
+                int[] pixels = !landscape&&orientation.compactPortrait()?ChargeFrames.compactPortrait(s,now-sceneStarted):ChargeFrames.render(s, now - sceneStarted,landscape);
                 long frameTime=SystemClock.uptimeMillis();
                 boolean transitionFrame=transition!=null;
                 boolean transitionEnding=transitionFrame&&transition.finished(frameTime);
@@ -178,15 +188,17 @@ public final class ChargeService extends Service {
                     pixels=transition.frame(pixels,frameTime);
                     if(transition.finished(frameTime))transition=null;
                 }
-                if (!Arrays.equals(pixels, lastFrame)) {
-                    display.show(pixels);
-                    lastFrame = pixels;
+                int[] submitted=FrameOrientation.project(pixels,orientation.rotation(),orientation.compositorRotation());
+                if (!Arrays.equals(submitted, lastSubmittedFrame)) {
+                    display.show(submitted);
+                    lastSubmittedFrame = submitted;
                     owns = true;
                 } else if (s.mode != ChargeState.Mode.CHARGING) {
                     // Reassert a latched still frame at a low rate after system presentations end.
-                    display.show(pixels);
+                    display.show(submitted);
                     owns = true;
                 }
+                lastFrame=pixels;
                 if(transitionFrame) {
                     transitionFrameCount++;
                     if(transitionEnding)lastTransition="completedMs="+(frameTime-transitionCommittedAt)+" renderedFrames="+transitionFrameCount;
@@ -204,7 +216,7 @@ public final class ChargeService extends Service {
                 handler.postDelayed(this, delay);
             } catch (Exception e) {
                 fail(e);
-                display=null;lastFrame=null;nextBusyCheck=0;transition=null;rotating=false;
+                display=null;lastFrame=null;lastSubmittedFrame=null;nextBusyCheck=0;transition=null;rotating=false;
                 // A transient vendor-service outage must never turn the user's switch off.
                 if(errorCount<4)errorCount++;
                 handler.postDelayed(this,RetryPolicy.delay(errorCount));
@@ -216,7 +228,7 @@ public final class ChargeService extends Service {
             if(display==null)display=new RearDisplay(this);
             display.show(null);
         }
-        owns = false; lastFrame = null;
+        owns = false; lastFrame = null;lastSubmittedFrame=null;
         previewFrame=null; transition=null;rotating=false;
     }
     private void fail(Exception e) {
@@ -238,6 +250,7 @@ public final class ChargeService extends Service {
         try { unregisterReceiver(battery); } catch (IllegalArgumentException ignored) { }
         try{clear();}catch(Exception e){Log.w(TAG,"Unable to release rear frame",e);}
         if(orientation!=null)orientation.close();
+        if(lockedSession!=null)lockedSession.close();
         instance=null;
         demo = null; demoActive = false; running = false;
         stopForeground(STOP_FOREGROUND_REMOVE);
@@ -255,6 +268,7 @@ public final class ChargeService extends Service {
         w.println("frameCells=" + (lastFrame == null ? 0 : lastFrame.length) + " frameHash=" + Arrays.hashCode(lastFrame));
         w.println("landscape="+landscape+" rotation="+(orientation==null?-1:orientation.rotation())+" bypassSignal="+BypassMonitor.signal+" bypassConnected="+BypassMonitor.connected);
         if(orientation!=null)w.println("orientation="+orientation.diagnostics());
+        if(lockedSession!=null)w.println("lockedDisplay="+lockedSession.diagnostics()+" submittedHash="+Arrays.hashCode(lastSubmittedFrame));
         w.println("smoothRotation="+smoothRotationEnabled(this)+" transitionActive="+(transition!=null)+" lastTransition="+lastTransition);
         w.println("detail=" + detail);
         w.println("recoverySource="+getSharedPreferences(PREFS,0).getString("recovery_source","none")+" errors="+errorCount);
