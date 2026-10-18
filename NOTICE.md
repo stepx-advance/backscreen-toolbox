@@ -1,6 +1,6 @@
 # 来源与权利说明
 
-本仓库的原创 Java/Python 代码、点阵图案、字形和动画时序，以及原创文档采用 MIT 许可，见 LICENSE。
+本仓库自行编写的 Java/Python 代码、点阵网格、字形和动画时序，以及原创文档采用 MIT 许可，见 LICENSE。下述第三方界面、品牌和角色权利不在此授权范围内。
 
 `app/res/drawable-nodpi/setup_*.png` 是为说明操作路径而截取的 Step AOS 系统设置界面；其中的原厂界面、图标、字体和品牌元素的权利属于各自权利人，不因本仓库的 MIT 许可而转移。这些图仅作为兼容性与设置说明，不构成原厂授权素材库。
 
@@ -17,3 +17,5 @@ STEPX、Step AOS、Android、GitHub 等名称用于说明兼容对象、运行�
 - [Aseprite Animation](https://www.aseprite.org/docs/animation/)
 
 以上为方法参考，没有复制其示例素材。
+
+“奶蛙大笑”参考了网络流传的同名表情形象（[参考介绍](https://tw.cyberlink.com/blog/ai-image-generator/5592/nailong-meme)），在原生点阵网格上手工简化绘制，未打包原始图片或视频。角色和原始表情的权利归各自权利人，项目的 MIT 许可不授予相关角色、商标或原始媒体的权利。
