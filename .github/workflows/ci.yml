@@ -7,7 +7,7 @@ permissions:
   contents: read
 jobs:
   test-and-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -22,7 +22,10 @@ jobs:
           python-version: '3.12'
       - name: Test production frame and state logic
         run: python3 tools/test.py
-      - name: Install Android build tools
-        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+      - name: Prepare Android build tools
+        run: |
+          if [ ! -f "$ANDROID_HOME/platforms/android-36/android.jar" ] || [ ! -x "$ANDROID_HOME/build-tools/36.0.0/aapt2" ]; then
+            "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-36' 'build-tools;36.0.0'
+          fi
       - name: Build with a disposable development key
         run: python3 tools/build.py
