@@ -18,7 +18,7 @@ python3 tools/build.py
 
 ## 开发构建
 
-默认输出 `dist/backscreen-toolbox-1.0.0-dev.apk` 和同名 `.sha256`。开发密钥及密码在 `.local/` 首次生成并保持本地复用，目录已被 Git 忽略。它与官方签名不同，无法覆盖官方安装；不要把开发构建冒充正式下载发布。
+默认输出 `dist/backscreen-toolbox-1.1.0-dev.apk` 和同名 `.sha256`。开发密钥及密码在 `.local/` 首次生成并保持本地复用，目录已被 Git 忽略。它与正式签名不同，无法覆盖正式安装；不要把开发构建冒充正式下载发布。
 
 开发构建使用相同包名，安装到已有官方版本的手机前，需自行处理签名冲突及卸载造成的数据清除。无需为测试另建功能不同的应用副本。
 
@@ -30,15 +30,15 @@ python3 tools/build.py
 python3 tools/build.py --release --keystore /private/path/release.p12 --ks-key-alias YOUR_ALIAS
 ```
 
-也可用 `--ks-pass-env` 指定另一个密码环境变量名称。工具不会在缺失正式私钥时自动新建替代密钥。输出 `dist/backscreen-toolbox-1.0.0.apk` 和校验文件。
+也可用 `--ks-pass-env` 指定另一个密码环境变量名称。工具不会在缺失正式私钥时自动新建替代密钥。输出 `dist/backscreen-toolbox-1.1.0.apk` 和校验文件。
 
-1.0.0 保留内部版签名证书，SHA-256：
+1.0.0 与 1.1.0 均保留原签名证书，SHA-256：
 
 ```text
 595b31c9e06240f86a3a4e227d7956d78e9617c01cdae50cd1ee1c6209e86025
 ```
 
-证书摘要是公开身份信息，私钥和密码不公开。包名为 `com.stepxadvance.backscreentoolbox`，versionName 为 `1.0.0`，versionCode 为 `1`。这是独立于旧包名的公开版本线。
+证书摘要是公开身份信息，私钥和密码不公开。包名为 `com.stepxadvance.backscreentoolbox`，versionName 为 `1.1.0`，versionCode 为 `2`。可直接覆盖公开版 1.0.0；这是独立于旧包名的公开版本线。
 
 ## 生成预览
 
