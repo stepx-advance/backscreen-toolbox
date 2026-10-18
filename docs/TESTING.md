@@ -5,7 +5,7 @@
 ## 环境
 
 - 设备：STEPX PZ261A，原生 17×23 点阵背屏。
-- 系统：Android 16 / API 36；Step AOS `1.0.0.2.26001_stable_user_20261004_131555` 测试固件。
+- 系统：Android 16 / API 36；Step AOS `1.0.0.2.26001_stable_user_20261004_131555`（系统渠道标记为 `stable`，构建类型为 `user`）。
 - 原厂电池组件：`1.0.0_20260929_143900`（versionCode 10013）。
 - 公开版：`com.stepxadvance.backscreentoolbox`，1.0.0 / versionCode 1。
 - 内部版：`local.stepx.backcharge`，此前最高 1.4.2；版本编号不与公开版直接比较。
