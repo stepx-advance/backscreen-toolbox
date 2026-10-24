@@ -4,6 +4,8 @@
 
 无需 Root 或 Shizuku。离线运行，无网络权限。非官方项目。
 
+文档：[产品需求（PRD）](docs/PRD.md) · [设置说明](docs/SETUP.md) · [权限与隐私](docs/PRIVACY.md) · [验证范围](docs/TESTING.md)。
+
 ![充电、满电与旁路的横竖屏效果示意](docs/images/design-preview.png)
 
 ## 下载与安装
