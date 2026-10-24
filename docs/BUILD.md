@@ -49,9 +49,12 @@ python3 -m pip install Pillow
 python3 tools/test.py
 python3 tools/preview.py
 python3 tools/transition_preview.py
+python3 tools/readme_preview.py
 ```
 
 默认查找 macOS 黑体、Linux Noto Sans CJK 和 Windows 微软雅黑，也可用 `BACKSCREEN_FONT` 指定 TTF/OTF/TTC 文件。图像输出到 `dist/`，与正式 Java 帧逻辑共用数据；它们是模拟示意，不是真机照片。
+
+`readme_preview.py` 只使用 Python 标准库和上述检查编译出的 Java 导出器，生成 `docs/images/readme-overview.svg`。总览使用合成数据，不读取手机或麦克风；SVG 保留可编辑矢量和文字，歌名由 Android 本机字体绘制，不包含在该总览中。修改绘图代码后先重新运行 `tools/test.py`，再导出总览。
 
 ## 自动检查
 
